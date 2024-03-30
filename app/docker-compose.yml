@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: local.Dockerfile
+    volumes:
+      - ./:/app
+      - ./.m2:/root/.m2
+    working_dir: /app
+    command: sh run.sh
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/java_db
+    ports:
+      - 8080:8080
+      - 35729:35729
+      - 5005:5005
+    depends_on:
+      - postgres
+
+  postgres:
+#  postgres:
+    image: postgres:16-alpine
+    hostname: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_DB: "java_db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    ports:
+      - "8432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
